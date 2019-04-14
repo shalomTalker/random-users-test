@@ -1,24 +1,29 @@
 const container = $('#users');
 var list;
-const initUsers = function(list) {
-    list.map(function(user, index) {
+const initUsers = function (list) {
+    list.map(function (user, index) {
         let card = $('<div>', { class: 'user-card', 'data-id': index })
+
         $('<img>', {
             class: 'image',
             src: user.image
         }).appendTo(card)
+
         $('<span>', {
             class: 'gender',
             text: `Gender: ${user.gender}`
         }).appendTo(card)
+
         $('<span>', {
             class: 'name',
             text: `Name: ${user.name}`
         }).appendTo(card)
+
         $('<span>', {
             class: 'age',
             text: `Age: ${user.age}`
         }).appendTo(card)
+
         $('<span>', {
             class: 'email',
             text: `Email: ${user.email}`
@@ -27,23 +32,31 @@ const initUsers = function(list) {
         let buttonsDiv = $('<div>', {
             class: 'btns'
         })
+
         $('<button>', {
             class: "delete-btn",
             text: "Del",
-            click: deleteUser(user, card),
+            click: function () {
+                deleteUser(user, card)
+            }
         }).appendTo(buttonsDiv)
+
         $('<button>', {
             class: "edit-btn",
             text: "Edit",
-            click: editUser(user, card),
+            click: function () {
+                editUser(user, card)
+            }
         }).appendTo(buttonsDiv)
+
         buttonsDiv.appendTo(card)
         card.appendTo(container)
 
     })
 }
+let storage = JSON.parse(localStorage.getItem("users"));
 
-if (JSON.parse(localStorage.getItem("users")).length !== 0) {
+if (storage && storage.length !== 0) {
     list = JSON.parse(localStorage.getItem("users"))
     initUsers(list)
 } else {
@@ -52,8 +65,8 @@ if (JSON.parse(localStorage.getItem("users")).length !== 0) {
     $.ajax({
         url: 'https://randomuser.me/api/?results=10',
         dataType: 'json',
-        success: function(data) {
-            data.results.map(function(user) {
+        success: function (data) {
+            data.results.map(function (user) {
 
                 let image = user.picture.large
                 let gender = user.gender
@@ -69,12 +82,12 @@ if (JSON.parse(localStorage.getItem("users")).length !== 0) {
     });
 
 }
-$('#generateBtn').click(function(e) {
+$('#generateBtn').click(function (e) {
     container.empty();
     $.ajax({
         url: 'https://randomuser.me/api/',
         dataType: 'json',
-        success: function(data) {
+        success: function (data) {
             let image = data.results[0].picture.large
             let gender = data.results[0].gender
             let name = data.results[0].name.first
@@ -91,13 +104,13 @@ $('#generateBtn').click(function(e) {
 
 
 
-const deleteUser = function(user, card) {
+const deleteUser = function (user, card) {
     list.pop(user.id)
     console.log(list);
     card.remove()
     localStorage.setItem("users", JSON.stringify(list));
 }
-const editUser = function(user, card) {
+const editUser = function (user, card) {
     card.children('.name').html(`
     <label for="name">Name:</label>
     <input type="text" name="name" value="${user.name}">`)
@@ -107,7 +120,7 @@ const editUser = function(user, card) {
     card.children('.btns').html('<button class="saveBtn">save</button>')
 
 
-    $('.saveBtn').click(function(e) {
+    $('.saveBtn').click(function (e) {
         let newName = $('[name=name]').val()
         let newEmail = $('[name=email]').val()
 
