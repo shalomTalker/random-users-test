@@ -1,6 +1,10 @@
 const container = $('#users');
 let list;
+
 function initUsers(list) {
+
+    container.empty();
+    
     list.map(function (user, index) {
         let card = $('<div>', { class: 'user-card', 'data-id': index })
 
@@ -83,12 +87,12 @@ if (storage && storage.length !== 0) {
 
 }
 $('#generateBtn').click(function (e) {
-    container.empty();
     $.ajax({
         url: 'https://randomuser.me/api/',
         dataType: 'json',
         success: function (data) {
-            let uuid = user.login.uuid
+            console.log(data)
+            let uuid = data.results[0].login.uuid
             let image = data.results[0].picture.large
             let gender = data.results[0].gender
             let name = data.results[0].name.first
@@ -105,18 +109,21 @@ $('#generateBtn').click(function (e) {
 
 
 
-function deleteUser (user, card) {
+function deleteUser(user, card) {
     list.pop(user.uuid)
     card.remove()
     localStorage.setItem("users", JSON.stringify(list));
 }
 function editUser(user, card) {
+    
     card.children('.name').html(`
     <label for="name">Name:</label>
     <input type="text" name="name" value="${user.name}">`)
+    
     card.children('.email').html(`
     <label for="email">Email:</label>
     <input type="text" name="email" value="${user.email}">`)
+    
     card.children('.btns').html('<button class="saveBtn">save</button>')
 
 
@@ -124,18 +131,10 @@ function editUser(user, card) {
         let newName = $('[name=name]').val()
         let newEmail = $('[name=email]').val()
 
-        card.children('.name').html(`<span class="name">Name: ${newName}</span>`)
-        card.children('.email').html(`<span class="email">Email: ${newEmail}</span>`)
-
-        card.children('.btns').html(`<button class="delete-btn">Del</button><button class="edit-btn">Edit</button>`)
         user.name = newName
         user.email = newEmail
-        
-        list.splice(user.uuid, 1, user)
-        
-        $('.delete-btn').click(function () { deleteUser(user, card) })
-        $('.edit-btn').click(function () { editUser(user, card) })
 
+        initUsers(list)
         localStorage.setItem("users", JSON.stringify(list));
     })
 
