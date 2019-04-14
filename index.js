@@ -1,7 +1,7 @@
 const container = $('#users');
-var list ;
-const initUsers = (list) => {
-    list.map((user, index) => {
+var list;
+const initUsers = function(list) {
+    list.map(function(user, index) {
         let card = $('<div>', { class: 'user-card', 'data-id': index })
         $('<img>', {
             class: 'image',
@@ -30,12 +30,12 @@ const initUsers = (list) => {
         $('<button>', {
             class: "delete-btn",
             text: "Del",
-            click: () => deleteUser(user, card),
+            click: deleteUser(user, card),
         }).appendTo(buttonsDiv)
         $('<button>', {
             class: "edit-btn",
             text: "Edit",
-            click: () => editUser(user, card),
+            click: editUser(user, card),
         }).appendTo(buttonsDiv)
         buttonsDiv.appendTo(card)
         card.appendTo(container)
@@ -46,15 +46,15 @@ const initUsers = (list) => {
 if (JSON.parse(localStorage.getItem("users")).length !== 0) {
     list = JSON.parse(localStorage.getItem("users"))
     initUsers(list)
-}else{
-    
-list = []
+} else {
+
+    list = []
     $.ajax({
         url: 'https://randomuser.me/api/?results=10',
         dataType: 'json',
-        success: function (data) {
-            data.results.map(user=>{
-    
+        success: function(data) {
+            data.results.map(function(user) {
+
                 let image = user.picture.large
                 let gender = user.gender
                 let name = user.name.first
@@ -69,19 +69,19 @@ list = []
     });
 
 }
-$('#generateBtn').click((e) => {
+$('#generateBtn').click(function(e) {
     container.empty();
     $.ajax({
         url: 'https://randomuser.me/api/',
         dataType: 'json',
-        success: function (data) {
+        success: function(data) {
             let image = data.results[0].picture.large
             let gender = data.results[0].gender
             let name = data.results[0].name.first
             let age = data.results[0].dob.age
             let email = data.results[0].email
 
-            let object = {image, gender, name, age, email}
+            let object = { image, gender, name, age, email }
             list.push(object)
             initUsers(list)
             localStorage.setItem("users", JSON.stringify(list));
@@ -91,13 +91,13 @@ $('#generateBtn').click((e) => {
 
 
 
-const deleteUser = (user ,card) => {
+const deleteUser = function(user, card) {
     list.pop(user.id)
     console.log(list);
     card.remove()
     localStorage.setItem("users", JSON.stringify(list));
 }
-const editUser = (user,card) => {
+const editUser = function(user, card) {
     card.children('.name').html(`
     <label for="name">Name:</label>
     <input type="text" name="name" value="${user.name}">`)
@@ -107,7 +107,7 @@ const editUser = (user,card) => {
     card.children('.btns').html('<button class="saveBtn">save</button>')
 
 
-    $('.saveBtn').click(e=>{
+    $('.saveBtn').click(function(e) {
         let newName = $('[name=name]').val()
         let newEmail = $('[name=email]').val()
 
@@ -118,13 +118,11 @@ const editUser = (user,card) => {
         user.name = newName
         user.email = newEmail
 
-        list.splice(user.id,1,user)
-        $('.delete-btn').click(()=>deleteUser(user, card))
-        $('.edit-btn').click(()=>editUser(user,card))
+        list.splice(user.id, 1, user)
+        $('.delete-btn').click(deleteUser(user, card))
+        $('.edit-btn').click(editUser(user, card))
 
         localStorage.setItem("users", JSON.stringify(list));
     })
 
 }
-
-
