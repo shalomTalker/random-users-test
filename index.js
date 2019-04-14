@@ -110,7 +110,7 @@ $('#generateBtn').click(function (e) {
 
 
 function deleteUser(user, card) {
-    list.pop(user.uuid)
+    list.splice(card['data-id'],1)
     card.remove()
     localStorage.setItem("users", JSON.stringify(list));
 }
