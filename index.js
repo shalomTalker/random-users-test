@@ -1,6 +1,6 @@
 const container = $('#users');
-var list;
-const initUsers = function (list) {
+let list;
+function initUsers(list) {
     list.map(function (user, index) {
         let card = $('<div>', { class: 'user-card', 'data-id': index })
 
@@ -67,13 +67,13 @@ if (storage && storage.length !== 0) {
         dataType: 'json',
         success: function (data) {
             data.results.map(function (user) {
-
+                let uuid = user.login.uuid
                 let image = user.picture.large
                 let gender = user.gender
                 let name = user.name.first
                 let age = user.dob.age
                 let email = user.email
-                let object = { image, gender, name, age, email }
+                let object = { uuid, image, gender, name, age, email }
                 list.push(object)
             })
             initUsers(list)
@@ -88,13 +88,14 @@ $('#generateBtn').click(function (e) {
         url: 'https://randomuser.me/api/',
         dataType: 'json',
         success: function (data) {
+            let uuid = user.login.uuid
             let image = data.results[0].picture.large
             let gender = data.results[0].gender
             let name = data.results[0].name.first
             let age = data.results[0].dob.age
             let email = data.results[0].email
 
-            let object = { image, gender, name, age, email }
+            let object = { uuid, image, gender, name, age, email }
             list.push(object)
             initUsers(list)
             localStorage.setItem("users", JSON.stringify(list));
@@ -104,13 +105,12 @@ $('#generateBtn').click(function (e) {
 
 
 
-const deleteUser = function (user, card) {
-    list.pop(user.id)
-    console.log(list);
+function deleteUser (user, card) {
+    list.pop(user.uuid)
     card.remove()
     localStorage.setItem("users", JSON.stringify(list));
 }
-const editUser = function (user, card) {
+function editUser(user, card) {
     card.children('.name').html(`
     <label for="name">Name:</label>
     <input type="text" name="name" value="${user.name}">`)
@@ -130,10 +130,11 @@ const editUser = function (user, card) {
         card.children('.btns').html(`<button class="delete-btn">Del</button><button class="edit-btn">Edit</button>`)
         user.name = newName
         user.email = newEmail
-
-        list.splice(user.id, 1, user)
-        $('.delete-btn').click(deleteUser(user, card))
-        $('.edit-btn').click(editUser(user, card))
+        
+        list.splice(user.uuid, 1, user)
+        
+        $('.delete-btn').click(function () { deleteUser(user, card) })
+        $('.edit-btn').click(function () { editUser(user, card) })
 
         localStorage.setItem("users", JSON.stringify(list));
     })
